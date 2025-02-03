@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Page</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        /* Custom CSS */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+        }
+
+        .alert {
+            font-size: 1rem;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* Make it cover the full height of the screen */
+        background-color: #ffcc00 /* Optional: Background color for the splash screen */
+       }
+        .splash-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .powered-by {
+        font-size: 12px; /* Adjust this value for desired font size */
+        color: #1a1b49;  /* Optional: Set a muted color */
+        text-align: center; /* Center align the text */
+        margin-top: 10px; /* Optional: Add space above the text */
+     }
+
+        /* Hide page content initially */
+        .content {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+        }
+
+        .btn-outline-primary {
+        font-weight: bold;
+        padding: 10px 20px;
+}
+.overflow-auto {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #007bff #f8f9fa; /* Firefox */
+}
+
+.overflow-auto::-webkit-scrollbar {
+    width: 8px; /* Chrome, Safari, Opera */
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 5px;
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+
+    </style>
+</head>
+
+<body>
+    
+<!-- Splash Screen -->
+
+<div class="splash-screen">
+    <img src="{% static 'img/logo.png' %}" alt="Logo" class="splash-logo">
+    <div class="powered-by"><b>Powered by YGR Global IT Services</b></div>
+</div>
+
+<!-- Page Content -->
+<div class="content">
+    <div class="container my-5">
+        
+        <!-- Track Order Button -->
+        <div class="d-flex justify-content-start mb-3">
+            <a href="" class="btn btn-outline-primary">Track Order</a>
+        </div>
+
+        <div class="card shadow p-4">
+            <div class="card-header text-center">
+                <h3>Place Your Order</h3>
+            </div>
+            <br>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label" for="name">Your Name</label>
+                    <input type="text" name="name" class="form-control" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="cabin">Cabin Number</label>
+                    <input type="text" name="cabin" class="form-control" id="cabin" required>
+                </div>
+                <!-- <div class="mb-3">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input type="text" name="phone" class="form-control" id="phone" required>
+                </div> -->
+                
+                <div class="mb-3">
+                    <label class="form-label">Select Items & Quantity</label>
+                    <div class="overflow-auto" style="max-height: 200px;">
+                        <div class="row">
+                            {% for item in menu_items %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card p-2 shadow-sm">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="order_items" value="{{ item.id }}" id="item_{{ item.id }}">
+                                            <label class="form-check-label" for="item_{{ item.id }}">
+                                                {{ item.name }}
+                                            </label>
+                                        </div>
+                                        <input type="number" name="quantity_{{ item.id }}" class="form-control mt-2" min="1" value="1" placeholder="Qty">
+                                    </div>
+                                </div>
+                                {% if forloop.counter|divisibleby:3 %}
+                                    </div><div class="row">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <button type="submit" class="btn btn-primary w-100">Place Order</button>
+            </form>
+            {% if error %}
+                <div class="alert alert-danger mt-3">{{ error }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+  
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // Hide splash screen after 3 seconds and show the content
+        window.addEventListener("load", function () {
+            setTimeout(function () {
+                document.querySelector(".splash-screen").style.display = "none";
+                document.querySelector(".content").style.display = "block";
+            }, 3000);
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .status {
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .status-pending {
+            background-color: #ffc107;
+            color: #fff;
+        }
+        .status-preparing {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+        .status-ready {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .status-completed {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        li {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Today's Orders</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Customer Name</th>
+                <th>Cabin</th>
+                <th>Phone</th>
+                <th>Order Items</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.name }}</td>
+                <td>{{ order.cabin }}</td>
+                <td>{{ order.phone }}</td>
+                <td>
+                    <ul>
+                        {% for order_item in order.orderitems.all %}
+                            <li>{{ order_item.item.name }} - Quantity: {{ order_item.quantity }}</li>
+                        {% empty %}
+                            <li>No items in this order.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <span class="status status-{{ order.status|lower }}">
+                        {{ order.status|title }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; font-size: 16px; color: #555;">No orders for today.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+</body>
+</html>

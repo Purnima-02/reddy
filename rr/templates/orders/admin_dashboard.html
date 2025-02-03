@@ -1,0 +1,196 @@
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <h2 class="mb-4 text-center">Admin Dashboard</h2>
+
+           <script>
+    function toggleAvailability(itemId, action) {
+        let url = action === "not_available" 
+            ? `/mark-not-available/${itemId}/` 
+            : `/mark-state/${itemId}/`;
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": getCookie('csrftoken')
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();  // Refresh the page to reflect changes
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+        <!-- Menu Management Section -->
+        <div class="col-md-12">
+            <div class="card shadow-sm p-4">
+                <h3 class="mb-4">Manage Menu</h3>
+
+                <!-- Form to Add New Menu Item -->
+                <form method="POST" class="mb-4">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" name="name" class="form-control" placeholder="Enter new item name" required>
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </div>
+                </form>
+
+                {% if messages %}
+                    <div class="alert alert-success">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Menu Items Table -->
+                <h5 class="mb-3">Menu Items</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if menu %}
+                            {% for item in menu.items.all %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>
+                                    <span class="badge {% if item.available %}bg-success{% else %}bg-danger{% endif %}">
+                                        {% if item.available %}Available{% else %}Unavailable{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" onclick="toggleAvailability({{ item.id }}, 'not_available')">
+                                        Not Available
+                                    </button>
+                                    
+                                    <button type="button" class="btn btn-success" onclick="toggleAvailability({{ item.id }}, 'state')">
+                                        Available
+                                    </button>
+                                </td>
+                                
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">No menu items available.</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center">No menu created yet.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+       
+{% endblock %}
+
+<!-- Add Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Optional: Add custom CSS for better styling -->
+<style>
+    /* General styling for the page */
+    body {
+        background-color: #f4f6f8;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #007bff;
+        color: white;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .input-group input {
+        border-radius: 8px 0 0 8px;
+    }
+
+    .input-group button {
+        border-radius: 0 8px 8px 0;
+    }
+
+    .list-group-item {
+        font-size: 1.1rem;
+        padding: 15px;
+    }
+
+    .list-group-item .badge {
+        font-size: 0.9rem;
+        padding: 0.4rem;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    /* Responsive styling */
+    @media (max-width: 768px) {
+        .card {
+            padding: 20px;
+        }
+
+        .list-group-item {
+            font-size: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<!-- Bootstrap JS (for handling responsive components) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>

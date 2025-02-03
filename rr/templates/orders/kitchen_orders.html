@@ -1,0 +1,108 @@
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-4"><center>Kitchen Orders</center></h2>
+        
+        <div class="row"> <!-- Bootstrap grid row -->
+            {% for order in orders %}
+                <div class="col-md-6 mb-3">  <!-- Two columns on medium+ screens, full-width on smaller screens -->
+                    <div class="card h-100">  <!-- h-100 ensures equal height for all cards -->
+                        <div class="card-body">
+                            <h5 class="card-title">{{ order.name }} (Cabin: {{ order.cabin }})</h5>
+                            
+                            <p class="card-text"><strong>Items:</strong>
+                                {% for order_item in order.orderitems.all %}
+                                    {{ order_item.item.name }} - {{ order_item.quantity }}{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                    No items selected.
+                                {% endfor %}
+                            </p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge {% if order.status == 'completed' %}bg-success
+                                {% elif order.status == 'ready' %}bg-info
+                                {% else %}bg-warning{% endif %}">
+                                    {{ order.status|title }}
+                                </span>
+                            </p>
+
+                            <!-- Form to Update Order Status -->
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <select name="status" class="form-select mb-2">
+                                    <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Preparing</option>
+                                    <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Ready for Pickup</option>
+                                    <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Completed</option>
+                                </select>
+                                <button type="submit" class="btn btn-success w-100">Update Status</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted">No pending orders.</p>
+            {% endfor %}
+        </div> <!-- End of Bootstrap row -->
+    </div>
+</div>
+{% endblock %}
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Optional Custom CSS -->
+<style>
+    /* Card and body styling */
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .form-select {
+        border-radius: 8px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+    }
+
+    .badge {
+        font-size: 1rem;
+        padding: 0.4rem;
+        text-transform: capitalize;
+    }
+
+    .mb-2 {
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+</style>
+
+<!-- Bootstrap JS and Popper.js for responsive components -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
